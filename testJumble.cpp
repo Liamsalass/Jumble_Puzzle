@@ -156,7 +156,7 @@ void testJumble() {
 
 int main() {
     srand(time(NULL));
-	//testJumble();
+	testJumble();
 
 	// Make sure your class works before you play the game!
 	playGame();

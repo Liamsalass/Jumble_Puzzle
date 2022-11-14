@@ -1,11 +1,11 @@
 //
-// Created by liams on 2022-11-10.
+// Created by Liam Salass on 2022-11-10.
+// #20229595
 //
 
 #include "jumble.h"
 #include <cstdlib>
 #include <cstring>
-#include <iostream>
 
 //Error handling
 char *BadJumbleException::what() {
@@ -25,6 +25,7 @@ JumblePuzzle::JumblePuzzle(){
 
 JumblePuzzle::JumblePuzzle(string hidden, string difficulty){
     //Normal Constructor
+    if (hidden.length() < 3 || hidden.length() > 10) throw BadJumbleException();
     hide = hidden;
     dif = difficulty;
     size = genSize(); //sets size
@@ -61,7 +62,7 @@ int JumblePuzzle::genSize(){
 }
 
 void JumblePuzzle::genJumble(){
-    //Allocate the array
+    //Allocate the array in heap
     arr = new char * [size];
     for (int i = 0; i < size; i++)
         arr[i] = new char [size];
@@ -80,32 +81,36 @@ void JumblePuzzle::genJumble(){
         for (int j = 0; j < size; j++)
             arr[i][j] = (rand()% 25) + 97;
 
-    //Place chars in heap
-    /*
-     * If reaches edge of the heap, changes dir and
-     * resets i  to begin placing chars again from the beginning
-    */
-
+    //Place chars in jumble puzzle
+    //If in a horizontal direction
     if (dir == 1 || dir == 3) {
+        //Change x position so that it doesn't extend outside of the heap
         x = rand() % (size - n);
+        //Revers the string array if it's going west
         if (dir == 3) {
             strrev(char_array);
         }
+        //Fill the jumble puzzle with the word
         for (int i = 0; i < n ; i++) {
             arr[y][i + x] = char_array[i];
         }
+        //Move x to correct position
         if (dir == 3) {
             x += n - 1;
         }
     }
+    //If in a vertical direction
     if (dir == 0 || dir == 2) {
+        //Change x position so that it doesn't extend outside of the heap
         y = rand() % (size - n);
         if (dir == 0) {
             strrev(char_array);
         }
+        //Fill the jumble puzzle with the word
         for (int i = 0; i < n ; i++) {
             arr[y + i][x] = char_array[i];
         }
+        //Move y to correct position
         if (dir == 0) {
             y += n - 1;
         }
