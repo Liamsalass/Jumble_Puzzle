@@ -136,6 +136,22 @@ void testJumble() {
 	cout << "Should be same as original 4:" << endl;
 	showJumble(jp4.getJumble(), sz);
 
+    //Testing string length
+    try {
+        JumblePuzzle jp5("HOWDYHOWDYHOWDY", "easy");
+        cout << "The hidden word is" << jp5.getWord() << endl;
+    } catch (BadJumbleException& e){
+        cerr << e.what() << endl;
+    }
+
+    //Testing incorrect difficulty input
+    try {
+        JumblePuzzle jp5("HOWDYHOWDYHOWDY", "esy");
+        cout << "The hidden word is" << jp5.getWord() << endl;
+    } catch (BadJumbleException& e){
+        cerr << e.what() << endl;
+    }
+
 	// Test for a memory leak.
 	// This is a pretty slow test and it may be that the limit of the loop
 	// will not be large enough to show a memory leak, especially if you have

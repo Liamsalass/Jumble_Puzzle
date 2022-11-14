@@ -12,17 +12,6 @@ char *BadJumbleException::what() {
     return (char *) "Bad Jumble Exception";
 }
 
-
-JumblePuzzle::JumblePuzzle(){
-    //Empty constructor
-    hide = "";
-    dif = "";
-    size = 0;
-    arr = nullptr;
-    x = 0;
-    y = 0;
-}
-
 JumblePuzzle::JumblePuzzle(string hidden, string difficulty){
     //Normal Constructor
     if (hidden.length() < 3 || hidden.length() > 10) throw BadJumbleException();
