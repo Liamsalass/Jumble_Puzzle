@@ -18,7 +18,7 @@ JumblePuzzle::JumblePuzzle(){
     hide = "";
     dif = "";
     size = 0;
-    arr = NULL;
+    arr = nullptr;
     x = 0;
     y = 0;
 }
@@ -32,6 +32,7 @@ JumblePuzzle::JumblePuzzle(string hidden, string difficulty){
 }
 
 JumblePuzzle::JumblePuzzle(JumblePuzzle const &other){
+    if (this == &other) return;
     //Copy constructor
     hide = other.hide;
     dif = other.dif;
@@ -45,9 +46,8 @@ JumblePuzzle::JumblePuzzle(JumblePuzzle const &other){
 JumblePuzzle::~JumblePuzzle(){
     //Destructor deletes each column and then the row.
     for (int i = 0; i < size; i++ )
-        free(arr[i]);
-    free(arr);
-    cout << "Deleted" << endl;
+        delete[] arr[i];
+    delete[] arr;
 }
 
 int JumblePuzzle::genSize(){
@@ -62,13 +62,9 @@ int JumblePuzzle::genSize(){
 
 void JumblePuzzle::genJumble(){
     //Allocate the array
-    try {
-        arr = (char **) malloc(size * sizeof(char *));
-        for (int i = 0; i < size; i++)
-            arr[i] = (char *) malloc(size * sizeof(char));
-    } catch (BadJumbleException& e) {
-        cerr << e.what() << endl;
-    }
+    arr = new char * [size];
+    for (int i = 0; i < size; i++)
+        arr[i] = new char [size];
     //Pick random x, y and direction for placing letters
     x = rand() % size;
     y = rand() % size;
@@ -76,7 +72,7 @@ void JumblePuzzle::genJumble(){
 
     //Turn string into array of char
     int n = hide.length();
-    char char_array[n + 1];
+    char char_array[n];
     strcpy (char_array, hide.c_str());
 
     //Fill array with random characters
@@ -89,42 +85,29 @@ void JumblePuzzle::genJumble(){
      * If reaches edge of the heap, changes dir and
      * resets i  to begin placing chars again from the beginning
     */
-    for (int i = 0; i < n; i++){
-        switch (dir){
-            case 0: // North
-                if ((y - i) < 0){
-                    i = 0;
-                    dir = 1;
-                    continue;
-                }
-                arr[y - i][x] = char_array[i];
-                break;
-            case 1: // East
-                if ((x + i)> size){
-                    i = 0;
-                    dir = 2;
-                    continue;
-                }
-                arr[y][x+i] = char_array[i];
-                break;
-            case 2: // South
-                if ((y+i)> size){
-                    i = 0;
-                    dir = 3;
-                    continue;
-                }
-                arr[y + i][x] = char_array[i];
-                break;
-            case 3: // West
-                if ((x-i)<0){
-                    i = 0;
-                    dir = 0;
-                    continue;
-                }
-                arr[y][x - i] = char_array[i];
-                break;
-            default:
-                throw BadJumbleException();
+
+    if (dir == 1 || dir == 3) {
+        x = rand() % (size - n);
+        if (dir == 3) {
+            strrev(char_array);
+        }
+        for (int i = 0; i < n ; i++) {
+            arr[y][i + x] = char_array[i];
+        }
+        if (dir == 3) {
+            x += n - 1;
+        }
+    }
+    if (dir == 0 || dir == 2) {
+        y = rand() % (size - n);
+        if (dir == 0) {
+            strrev(char_array);
+        }
+        for (int i = 0; i < n ; i++) {
+            arr[y + i][x] = char_array[i];
+        }
+        if (dir == 0) {
+            y += n - 1;
         }
     }
 }
@@ -133,9 +116,9 @@ charArrayPtr* JumblePuzzle::getJumble(){
     //Returns a new jumble by allocating memory for a new
     //arry of equal size and then copies the contents from the
     //other array into the new one to be returned.
-    char **newArr = (char**) malloc(size * sizeof(char*));
+    char **newArr = new char* [size];
     for (int i = 0; i < size; i++ ){
-        newArr[i] = (char*) malloc(size * sizeof(char));
+        newArr[i] = new char [size];
         for (int j = 0; j < size; j++){
             newArr[i][j] = arr[i][j];
         }
